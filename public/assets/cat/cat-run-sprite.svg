@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 174" role="img" aria-label="running white cat sprite sheet">
+  <defs>
+    <style>
+      .fur{fill:#fff;stroke:#151515;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+      .line{fill:none;stroke:#151515;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+      .pink{fill:#ffc7d4;stroke:#151515;stroke-width:5;stroke-linejoin:round}
+      .ink{fill:#151515}
+    </style>
+    <g id="run-a">
+      <path class="line" d="M46 95 C26 67 37 42 65 39 C90 38 89 71 68 84" />
+      <ellipse class="fur" cx="113" cy="104" rx="63" ry="33" transform="rotate(-3 113 104)" />
+      <ellipse class="fur" cx="173" cy="76" rx="36" ry="31" transform="rotate(4 173 76)" />
+      <path class="pink" d="M151 55 L145 30 L166 46 Z" />
+      <path class="pink" d="M186 49 L201 28 L204 56 Z" />
+      <circle class="ink" cx="181" cy="75" r="4" />
+      <path class="line" d="M197 82 L219 79 M197 88 L220 91" />
+      <path class="line" d="M78 128 L50 148 M100 132 L115 154 M138 130 L170 148 M156 126 L139 151" />
+    </g>
+    <g id="run-b">
+      <path class="line" d="M46 92 C25 58 42 36 69 43 C91 49 80 75 62 84" />
+      <ellipse class="fur" cx="113" cy="98" rx="64" ry="32" transform="rotate(2 113 98)" />
+      <ellipse class="fur" cx="175" cy="70" rx="36" ry="31" transform="rotate(-2 175 70)" />
+      <path class="pink" d="M153 50 L150 26 L169 44 Z" />
+      <path class="pink" d="M189 45 L205 26 L205 54 Z" />
+      <circle class="ink" cx="183" cy="69" r="4" />
+      <path class="line" d="M199 76 L222 72 M199 82 L221 84" />
+      <path class="line" d="M78 121 L96 149 M101 123 L65 147 M137 122 L126 151 M158 119 L188 143" />
+    </g>
+    <g id="run-c">
+      <path class="line" d="M48 98 C23 77 31 50 57 43 C87 35 91 67 70 82" />
+      <ellipse class="fur" cx="113" cy="105" rx="62" ry="34" transform="rotate(-4 113 105)" />
+      <ellipse class="fur" cx="172" cy="76" rx="36" ry="31" transform="rotate(5 172 76)" />
+      <path class="pink" d="M150 55 L145 31 L166 46 Z" />
+      <path class="pink" d="M185 50 L200 29 L203 57 Z" />
+      <circle class="ink" cx="180" cy="76" r="4" />
+      <path class="line" d="M196 82 L219 78 M196 88 L219 91" />
+      <path class="line" d="M76 129 L44 138 M101 130 L127 151 M136 130 L159 151 M157 126 L184 135" />
+    </g>
+    <g id="run-d">
+      <path class="line" d="M48 91 C31 57 48 38 75 48 C94 55 82 78 64 85" />
+      <ellipse class="fur" cx="114" cy="99" rx="64" ry="32" transform="rotate(1 114 99)" />
+      <ellipse class="fur" cx="176" cy="71" rx="36" ry="31" />
+      <path class="pink" d="M153 51 L151 28 L169 44 Z" />
+      <path class="pink" d="M190 46 L206 28 L205 55 Z" />
+      <circle class="ink" cx="184" cy="70" r="4" />
+      <path class="line" d="M200 77 L222 75 M200 83 L222 86" />
+      <path class="line" d="M80 122 L53 151 M101 123 L112 148 M138 123 L174 149 M158 121 L143 151" />
+    </g>
+    <g id="run-e">
+      <path class="line" d="M47 94 C25 66 35 42 64 39 C88 38 88 70 67 84" />
+      <ellipse class="fur" cx="113" cy="102" rx="63" ry="33" transform="rotate(-2 113 102)" />
+      <ellipse class="fur" cx="174" cy="74" rx="36" ry="31" transform="rotate(3 174 74)" />
+      <path class="pink" d="M152 53 L147 29 L168 45 Z" />
+      <path class="pink" d="M187 48 L202 28 L205 56 Z" />
+      <circle class="ink" cx="182" cy="73" r="4" />
+      <path class="line" d="M198 80 L221 76 M198 86 L221 88" />
+      <path class="line" d="M77 126 L90 151 M100 128 L67 148 M137 126 L125 151 M157 123 L188 142" />
+    </g>
+    <g id="run-f">
+      <path class="line" d="M49 99 C23 79 31 51 58 44 C88 36 92 68 70 83" />
+      <ellipse class="fur" cx="114" cy="106" rx="62" ry="34" transform="rotate(-4 114 106)" />
+      <ellipse class="fur" cx="173" cy="77" rx="36" ry="31" transform="rotate(4 173 77)" />
+      <path class="pink" d="M151 56 L146 31 L167 47 Z" />
+      <path class="pink" d="M186 51 L201 30 L204 58 Z" />
+      <circle class="ink" cx="181" cy="76" r="4" />
+      <path class="line" d="M197 83 L220 79 M197 89 L220 92" />
+      <path class="line" d="M77 130 L48 150 M101 132 L126 152 M137 131 L166 148 M157 128 L139 151" />
+    </g>
+  </defs>
+  <use href="#run-a" x="0" />
+  <use href="#run-b" x="256" />
+  <use href="#run-c" x="512" />
+  <use href="#run-d" x="768" />
+  <use href="#run-e" x="1024" />
+  <use href="#run-f" x="1280" />
+</svg>

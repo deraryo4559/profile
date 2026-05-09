@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <script>
+      ;(function () {
+        var base = '/profile'
+        var path = window.location.pathname
+        var route = path.indexOf(base) === 0 ? path.slice(base.length) || '/' : '/'
+        var query = route === '/' ? '' : '?route=' + encodeURIComponent(route)
+
+        window.location.replace(base + '/' + query)
+      })()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 174" role="img" aria-label="white cat pose sprite sheet">
+  <defs>
+    <style>
+      .fur{fill:#fff;stroke:#151515;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+      .line{fill:none;stroke:#151515;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+      .pink{fill:#ffc7d4;stroke:#151515;stroke-width:5;stroke-linejoin:round}
+      .ink{fill:#151515}
+      .blush{fill:#ff9db1}
+    </style>
+    <g id="sleep">
+      <path class="line" d="M58 103 C31 81 35 48 66 42 C96 37 104 68 82 84" />
+      <ellipse class="fur" cx="119" cy="108" rx="74" ry="36" />
+      <circle class="fur" cx="174" cy="99" r="29" />
+      <path class="pink" d="M153 83 L149 61 L169 77 Z" />
+      <path class="pink" d="M187 80 L202 62 L203 88 Z" />
+      <path class="line" d="M168 101 Q174 105 180 101" />
+      <path class="line" d="M198 103 L221 99 M198 109 L219 112" />
+      <path class="line" d="M74 131 C99 146 136 147 160 132" />
+      <path class="line" d="M213 47 H232 M222 36 L237 36" />
+    </g>
+    <g id="sit">
+      <path class="line" d="M66 112 C35 93 42 54 75 51 C105 50 103 85 80 97" />
+      <ellipse class="fur" cx="119" cy="104" rx="54" ry="49" />
+      <circle class="fur" cx="133" cy="59" r="35" />
+      <path class="pink" d="M110 38 L105 13 L127 31 Z" />
+      <path class="pink" d="M148 34 L166 14 L167 43 Z" />
+      <circle class="ink" cx="124" cy="58" r="4" />
+      <circle class="ink" cx="144" cy="58" r="4" />
+      <path class="line" d="M134 65 Q132 71 126 72 M134 65 Q136 71 143 72" />
+      <path class="line" d="M95 137 C116 148 143 148 164 137 M102 128 L83 150 M154 128 L173 150" />
+      <path class="line" d="M104 68 L78 65 M105 75 L78 79 M159 68 L186 65 M158 75 L186 80" />
+    </g>
+    <g id="peek">
+      <path class="fur" d="M75 154 C70 106 88 67 129 62 C173 57 195 98 188 154 Z" />
+      <path class="pink" d="M104 66 L99 35 L124 58 Z" />
+      <path class="pink" d="M156 61 L176 35 L178 72 Z" />
+      <circle class="ink" cx="121" cy="96" r="5" />
+      <circle class="ink" cx="153" cy="96" r="5" />
+      <path class="line" d="M137 105 Q133 113 125 114 M137 105 Q141 113 150 114" />
+      <path class="line" d="M104 108 L75 101 M105 118 L75 119 M168 108 L199 101 M167 118 L199 119" />
+      <path class="line" d="M66 155 H199" />
+    </g>
+    <g id="jump">
+      <path class="line" d="M59 105 C25 77 42 43 74 51 C102 58 86 90 67 95" />
+      <ellipse class="fur" cx="116" cy="90" rx="64" ry="34" transform="rotate(-12 116 90)" />
+      <ellipse class="fur" cx="176" cy="56" rx="36" ry="31" transform="rotate(7 176 56)" />
+      <path class="pink" d="M154 36 L150 12 L170 30 Z" />
+      <path class="pink" d="M190 32 L207 13 L207 41 Z" />
+      <circle class="ink" cx="184" cy="55" r="4" />
+      <path class="line" d="M200 62 L223 58 M200 68 L221 71" />
+      <path class="line" d="M78 111 L45 132 M105 113 L120 141 M138 108 L173 130 M159 101 L190 111" />
+      <path class="line" d="M94 151 C120 158 154 158 184 151" />
+    </g>
+    <g id="hello">
+      <path class="line" d="M67 112 C38 91 44 57 74 52 C104 47 105 83 82 96" />
+      <ellipse class="fur" cx="120" cy="105" rx="52" ry="48" />
+      <circle class="fur" cx="134" cy="58" r="35" />
+      <path class="pink" d="M111 37 L107 13 L129 31 Z" />
+      <path class="pink" d="M149 34 L167 14 L168 43 Z" />
+      <circle class="ink" cx="124" cy="58" r="4" />
+      <path class="line" d="M144 57 Q151 57 156 51" />
+      <circle class="blush" cx="114" cy="70" r="5" />
+      <circle class="blush" cx="157" cy="70" r="5" />
+      <path class="line" d="M135 66 Q132 73 126 74 M135 66 Q139 73 146 74" />
+      <path class="line" d="M99 124 L73 93 M163 125 L185 94 M185 94 L195 78 M185 94 L203 99" />
+      <path class="line" d="M96 138 C117 148 145 148 166 137" />
+    </g>
+  </defs>
+  <use href="#sleep" x="0" />
+  <use href="#sit" x="256" />
+  <use href="#peek" x="512" />
+  <use href="#jump" x="768" />
+  <use href="#hello" x="1024" />
+</svg>
