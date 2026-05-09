@@ -32,6 +32,99 @@ Cloudflare PagesにGitHubリポジトリを接続し、`main` ブランチへの
 base: '/profile/'
 ```
 
+## Claude Chromeに依頼するプロンプト（ブラウザ操作で初回デプロイ）
+
+Claude Chromeなど、ブラウザ操作ができるAIにCloudflare Pagesの初回デプロイを依頼する場合は、以下のプロンプトを使う。
+
+このプロンプトは「ブラウザ上でCloudflare DashboardとGitHubを操作する」ことを目的にしている。ローカルのターミナル操作はClaude Code向けの作業として分離する。
+
+```text
+あなたはブラウザ操作でCloudflare Pagesの初回デプロイを行う担当です。
+
+目的:
+GitHubリポジトリ `https://github.com/deraryo4559/profile.git` をCloudflare Pagesに接続し、`main` ブランチから本番サイトとして公開してください。
+
+重要な前提:
+- 操作はブラウザ上で行ってください。
+- ターミナルやローカルファイル編集は使わないでください。
+- Cloudflare / GitHub のログイン、2FA、権限確認が出た場合は、ユーザーに操作を引き継がせてください。パスワードや認証コードを推測・保存・入力しないでください。
+- Cloudflare Pagesでは Git integration を使い、GitHubの `main` ブランチへのpushを本番デプロイのトリガーにしてください。
+- Cloudflare Pagesは `*.pages.dev` または独自ドメインのルートURLで公開する想定です。
+
+デプロイ前の確認:
+1. GitHubで `https://github.com/deraryo4559/profile` を開き、リポジトリが存在することを確認してください。
+2. `package.json` を開き、`build` script があることを確認してください。
+3. 可能であれば `vite.config.ts` を確認してください。
+   - `base: '/'` になっている、または環境変数でCloudflare側だけ `/` にできる状態ならデプロイに進んでください。
+   - `base: '/profile/'` の固定値のままなら、Cloudflareのルート公開ではJS/CSS/assetsが壊れる可能性があります。その場合はデプロイを進めず、ユーザーに「先にCloudflare Pages用にvite.config.tsを修正してpushする必要がある」と報告してください。
+4. 可能であれば `public/_redirects` があるか確認してください。
+   - なくてもCloudflare Pages側でSPAとして動く場合がありますが、直リンク対策として `/* /index.html 200` を置く構成が望ましいです。ない場合は、公開後に `/profile` や `/news/...` の直リンクを必ず確認してください。
+
+Cloudflare Dashboardでの操作:
+1. `https://dash.cloudflare.com/` を開いてください。
+2. ログインが必要な場合はユーザーに操作してもらってください。
+3. 左メニューまたはトップから `Workers & Pages` を開いてください。
+4. `Create application` を選択してください。
+5. `Pages` を選択してください。
+6. `Import an existing Git repository` または `Connect to Git` を選択してください。
+7. GitHub連携を求められたら、ユーザーに許可操作をしてもらってください。
+   - 可能なら `Only select repositories` を選び、`deraryo4559/profile` のみにアクセスを付与してください。
+   - すでにGitHub連携済みなら次へ進んでください。
+8. リポジトリ一覧から `deraryo4559/profile` を選択してください。
+9. `Begin setup` または同等のボタンでビルド設定へ進んでください。
+
+Cloudflare Pagesの設定値:
+- Project name: `profile`
+- Production branch: `main`
+- Framework preset: `React (Vite)` があれば選択。なければ `None` でもよい。
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Root directory: 空欄、または `/`
+- Environment variables:
+  - `NODE_VERSION` = `20`
+  - `VITE_BASE_PATH` = `/`
+
+初回デプロイ:
+1. 設定内容を見直し、`Save and Deploy` または同等のボタンを押してください。
+2. ビルドログを確認してください。
+3. `npm install` / `npm ci`、`npm run build`、assets upload が成功しているか確認してください。
+4. 失敗した場合は、エラー文を要約してユーザーに報告してください。Cloudflare上の設定だけで直せるもの以外は、勝手にGitHub上のコード編集をしないでください。
+5. 成功したら、Cloudflare Pagesが発行した `https://profile.pages.dev` などの公開URLを控えてください。
+
+公開後の確認:
+以下のURLをブラウザで開いて表示確認してください。実際の公開URLを `<PUBLIC_URL>` に置き換えてください。
+
+- `<PUBLIC_URL>/`
+- `<PUBLIC_URL>/profile`
+- `<PUBLIC_URL>/work`
+- `<PUBLIC_URL>/news`
+- `<PUBLIC_URL>/news/ai-business-insights-2026-completed`
+- `<PUBLIC_URL>/contact`
+
+確認観点:
+- トップページのロゴ、ヒーロー、WORK、NEWSが表示される
+- `/profile` の人物写真が大きく崩れていない
+- NEWS一覧のカテゴリタグが色分けされている
+- `/contact` のフォームUIが表示される
+- JS/CSS/assetsが404になっていない
+- 直リンクで開いてもCloudflareの404にならない
+- モバイル幅でもヘッダー、ヒーロー、プロフィール写真、NEWSタグが崩れない
+
+最終報告で含めること:
+- Cloudflare Pagesのプロジェクト名
+- 公開URL
+- デプロイ成功/失敗
+- 失敗した場合のエラー概要
+- 確認したURLと結果
+- ユーザー側で追加対応が必要な項目
+
+注意:
+- 認証情報、2FAコード、アクセストークンを記録しないでください。
+- GitHub連携の権限は必要最小限にしてください。
+- すでに同名のCloudflare Pagesプロジェクトがある場合は、既存プロジェクトを壊さず、ユーザーに確認してから進めてください。
+- 独自ドメイン設定は、ユーザーから明示的に依頼されるまでは行わないでください。
+```
+
 Cloudflare Pagesの `*.pages.dev` や独自ドメインのルートで公開する場合、`base: '/profile/'` のままだとビルド後のJS/CSS/assets参照が `/profile/assets/...` になり、ルート公開で壊れる可能性が高い。
 
 Cloudflare Pagesでルート公開するなら、以下のどちらかを選ぶ。
@@ -70,12 +163,16 @@ export default defineConfig({
 環境変数でbase pathを切り替える。
 
 ```ts
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  plugins: [react()],
-  base: process.env.VITE_BASE_PATH ?? '/profile/',
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, '.', '')
+
+  return {
+    plugins: [react()],
+    base: env.VITE_BASE_PATH ?? '/profile/',
+  }
 })
 ```
 
@@ -87,7 +184,7 @@ VITE_BASE_PATH=/
 
 GitHub Pages用にビルドする場合は、環境変数を設定せずに `npm run build` を使う。
 
-ただし、運用をシンプルにするなら方針Aを推奨する。
+現在の実装は、既存のGitHub Pages公開も残せる方針Bを採用している。
 
 ## Cloudflare Pages設定
 
@@ -116,7 +213,7 @@ Root directory: 空欄
 NODE_VERSION=20
 ```
 
-方針Bを選ぶ場合のみ、追加で以下を設定する。
+このリポジトリではGitHub PagesとCloudflare Pagesを併用できるように、追加で以下を設定する。
 
 ```text
 VITE_BASE_PATH=/
@@ -174,9 +271,10 @@ C:\Users\ryoon\workspace\profile
 
 作業方針:
 1. まず現在の差分、ブランチ、remote、package.json、vite.config.ts、public配下を確認してください。
-2. Cloudflare Pagesのルート公開に合わせて vite.config.ts の base を '/' に変更してください。
-   - GitHub Pagesとの併用を強く維持した方がよいと判断した場合は、VITE_BASE_PATHで切り替える案を提案してから進めてください。
-3. SPA直リンク対応のため、public/_redirects を追加してください。
+2. Cloudflare Pagesのルート公開に合わせて vite.config.ts が `VITE_BASE_PATH` でbaseを切り替えられる状態か確認してください。
+   - 現在の想定は、環境変数未指定時はGitHub Pages向けに `/profile/`、Cloudflare Pages側では `VITE_BASE_PATH=/` を指定して `/` に切り替える構成です。
+   - すでにこの構成になっていれば、vite.config.tsを不要に変更しないでください。
+3. SPA直リンク対応のため、public/_redirects が存在することを確認してください。
    内容は以下:
    /* /index.html 200
 4. 既存の public/404.html はGitHub Pages向けなので、Cloudflare Pagesでは _redirects を優先することを確認してください。削除は不要です。
@@ -196,6 +294,7 @@ Cloudflare Pages設定:
 - Build output directory: dist
 - Root directory: 空欄
 - Environment variable: NODE_VERSION=20
+- Environment variable: VITE_BASE_PATH=/
 
 確認してほしいURL:
 - /
