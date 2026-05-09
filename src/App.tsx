@@ -140,7 +140,7 @@ type HighlightItem = {
 }
 
 const navItems: Array<{ label: string; path: string; hash?: string }> = [
-  { label: 'PROFILE', path: '/profile' },
+  { label: 'PROFILE', path: '/about' },
   { label: 'WORK', path: '/work' },
   { label: 'NEWS', path: '/news' },
   { label: 'LINK', path: '/link' },
@@ -645,25 +645,25 @@ const careerItems = [
     period: '2025 - 現在',
     title: '株式会社ACES 長期インターン',
     description: 'AI・アルゴリズム領域に近い実務開発で、実装・検証・改善の進め方を学んでいます。',
-    path: '/profile/aces-internship',
+    path: '/about/aces-internship',
   },
   {
     period: '2024',
     title: '松尾研寄附講座 修了',
     description: '機械学習・深層学習の基礎と応用を体系的に学習しました。',
-    path: '/profile/matsuo-lecture',
+    path: '/about/matsuo-lecture',
   },
   {
     period: '2023 - 現在',
     title: 'GitHub公開リポジトリ',
     description: 'AI、Web、データ分析などのコードを継続的に公開しています。',
-    path: '/profile/github-repositories',
+    path: '/about/github-repositories',
   },
   {
     period: '2022 - 現在',
     title: '撮影活動',
     description: 'ポートレート、イベント、企業・団体の広報素材の撮影に取り組んでいます。',
-    path: '/profile/photography-activity',
+    path: '/about/photography-activity',
   },
 ]
 
@@ -969,7 +969,7 @@ function App() {
 function getPageMeta(path: string) {
   const [, section, slug] = path.split('/')
 
-  if (section === 'profile' && slug) {
+  if ((section === 'about' || section === 'profile') && slug) {
     const highlight = findHighlight(slug)
     return {
       title: `${highlight?.pageTitle ?? 'PROFILE'} | Ryo Onodera`,
@@ -977,7 +977,7 @@ function getPageMeta(path: string) {
     }
   }
 
-  if (section === 'profile') {
+  if (section === 'about' || section === 'profile') {
     return {
       title: 'PROFILE | Ryo Onodera',
       description: '小野寺 諒の経歴、活動領域、スキルをまとめたプロフィールページ。',
@@ -1037,11 +1037,11 @@ function getPageMeta(path: string) {
 function renderPage(path: string) {
   const [, section, slug] = path.split('/')
 
-  if (section === 'profile' && slug) {
+  if ((section === 'about' || section === 'profile') && slug) {
     return <HighlightDetailPage highlight={findHighlight(slug)} />
   }
 
-  if (section === 'profile') {
+  if (section === 'about' || section === 'profile') {
     return <ProfileDetailPage />
   }
 
@@ -1251,7 +1251,7 @@ function ProfileSection() {
           {highlights.map((item) => {
             const Icon = item.icon
             return (
-              <AppLink className="highlight-item" path={`/profile/${item.slug}`} key={item.label}>
+              <AppLink className="highlight-item" path={`/about/${item.slug}`} key={item.label}>
                 <Icon className={`highlight-icon highlight-icon--${item.tone}`} aria-hidden="true" />
                 <span>
                   <strong>{item.label}</strong>
@@ -1752,7 +1752,7 @@ function WorkDetailPage({ work }: { work: WorkItem | undefined }) {
 
 function HighlightDetailPage({ highlight }: { highlight: HighlightItem | undefined }) {
   if (!highlight) {
-    return <NotFoundPage title="PROFILE" backPath="/profile" />
+    return <NotFoundPage title="PROFILE" backPath="/about" />
   }
 
   const Icon = highlight.icon
@@ -1763,7 +1763,7 @@ function HighlightDetailPage({ highlight }: { highlight: HighlightItem | undefin
   return (
     <article className={`detail-page highlight-page highlight-page--${highlight.tone}`}>
       <div className="container">
-        <AppLink className="back-link" path="/profile">
+        <AppLink className="back-link" path="/about">
           <ArrowLeft aria-hidden="true" />
           PROFILEに戻る
         </AppLink>
@@ -2288,7 +2288,7 @@ function Footer() {
         </div>
         <nav className="site-footer__nav" aria-label="Footer navigation">
           <h2>Navigation</h2>
-          <AppLink path="/profile">PROFILE</AppLink>
+          <AppLink path="/about">PROFILE</AppLink>
           <AppLink path="/work">WORK</AppLink>
           <AppLink path="/news">NEWS</AppLink>
           <AppLink path="/link">LINK</AppLink>

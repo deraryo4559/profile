@@ -8,9 +8,11 @@
   <body>
     <script>
       ;(function () {
-        var githubBase = '/profile'
-        var isGitHubPages = window.location.hostname.indexOf('github.io') !== -1
-        var base = isGitHubPages ? githubBase : ''
+        var profileBase = '/profile'
+        var host = window.location.hostname
+        var usesProfileBase =
+          host.indexOf('github.io') !== -1 || host === 'ryo-onodera.com' || host === 'www.ryo-onodera.com'
+        var base = usesProfileBase ? profileBase : ''
         var path = window.location.pathname
         var hasBasePath = base && (path === base || path.indexOf(base + '/') === 0)
         var route = hasBasePath ? path.slice(base.length) || '/' : path || '/'

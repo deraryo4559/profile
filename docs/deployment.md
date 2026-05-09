@@ -1,168 +1,45 @@
 # Deployment Plan
 
 作成日: 2026-05-10
+最終更新: 2026-05-10
 
 ## 目的
 
-このリポジトリ `https://github.com/deraryo4559/profile.git` をGitHubへpushし、Cloudflare PagesでWebサイトとして公開する。
+このリポジトリ `https://github.com/deraryo4559/profile.git` をCloudflare Pagesで公開し、最終的な公開URLを以下に統一する。
+
+```text
+https://ryo-onodera.com/profile
+```
+
+`https://profile-94u.pages.dev` はCloudflare Pagesの仮URL・確認用URLであり、最終的に案内するURLではない。
 
 ## 推奨方針
 
-Cloudflare PagesにGitHubリポジトリを接続し、`main` ブランチへのpushを本番デプロイのトリガーにする。
+`ryo-onodera.com` の既存サイトや他パスを壊さないため、このプロフィールサイトは `/profile` 配下だけに載せる。
 
-公式ドキュメントでは、React + Vite のCloudflare Pages設定は以下が標準。
+Cloudflare Pagesのカスタムドメインは基本的にホスト名単位のため、`ryo-onodera.com/profile` のようなパス配下に載せる場合は、CloudflareのOrigin RuleとURL Rewrite Ruleを使う。
 
-- Production branch: `main`
-- Build command: `npm run build`
-- Build output directory: `dist`
+構成:
+
+- GitHub repo: `deraryo4559/profile`
+- Cloudflare Pages project: `profile`
+- Pages production branch: `main`
+- Public URL: `https://ryo-onodera.com/profile`
+- Pages origin/custom domain: `profile-origin.ryo-onodera.com`
+- Public route: `ryo-onodera.com/profile*` -> `profile-origin.ryo-onodera.com`
+- URL rewrite: `/profile/...` をPages originへ送る前に `/...` へ変換
 
 参考:
 
-- Cloudflare Pages React guide: https://developers.cloudflare.com/pages/framework-guides/deploy-a-react-site/
+- Cloudflare Pages custom domains: https://developers.cloudflare.com/pages/configuration/custom-domains/
+- Cloudflare Rules: Point to Pages with a custom domain: https://developers.cloudflare.com/rules/origin-rules/tutorials/point-to-pages-with-custom-domain/
 - Cloudflare Pages build configuration: https://developers.cloudflare.com/pages/configuration/build-configuration/
-- Cloudflare Pages Git integration: https://developers.cloudflare.com/pages/configuration/git-integration/
 - Cloudflare Pages redirects: https://developers.cloudflare.com/pages/configuration/redirects/
+- Redirecting `*.pages.dev` to a custom domain: https://developers.cloudflare.com/pages/how-to/redirect-to-custom-domain/
 
-## 現状の注意点
+## リポジトリ側の設定
 
-このプロジェクトは現在、GitHub Pagesのサブパス公開を想定している。
-
-```ts
-// vite.config.ts
-base: '/profile/'
-```
-
-## Claude Chromeに依頼するプロンプト（ブラウザ操作で初回デプロイ）
-
-Claude Chromeなど、ブラウザ操作ができるAIにCloudflare Pagesの初回デプロイを依頼する場合は、以下のプロンプトを使う。
-
-このプロンプトは「ブラウザ上でCloudflare DashboardとGitHubを操作する」ことを目的にしている。ローカルのターミナル操作はClaude Code向けの作業として分離する。
-
-```text
-あなたはブラウザ操作でCloudflare Pagesの初回デプロイを行う担当です。
-
-目的:
-GitHubリポジトリ `https://github.com/deraryo4559/profile.git` をCloudflare Pagesに接続し、`main` ブランチから本番サイトとして公開してください。
-
-重要な前提:
-- 操作はブラウザ上で行ってください。
-- ターミナルやローカルファイル編集は使わないでください。
-- Cloudflare / GitHub のログイン、2FA、権限確認が出た場合は、ユーザーに操作を引き継がせてください。パスワードや認証コードを推測・保存・入力しないでください。
-- Cloudflare Pagesでは Git integration を使い、GitHubの `main` ブランチへのpushを本番デプロイのトリガーにしてください。
-- Cloudflare Pagesは `*.pages.dev` または独自ドメインのルートURLで公開する想定です。
-
-デプロイ前の確認:
-1. GitHubで `https://github.com/deraryo4559/profile` を開き、リポジトリが存在することを確認してください。
-2. `package.json` を開き、`build` script があることを確認してください。
-3. 可能であれば `vite.config.ts` を確認してください。
-   - `base: '/'` になっている、または環境変数でCloudflare側だけ `/` にできる状態ならデプロイに進んでください。
-   - `base: '/profile/'` の固定値のままなら、Cloudflareのルート公開ではJS/CSS/assetsが壊れる可能性があります。その場合はデプロイを進めず、ユーザーに「先にCloudflare Pages用にvite.config.tsを修正してpushする必要がある」と報告してください。
-4. 可能であれば `public/_redirects` があるか確認してください。
-   - なくてもCloudflare Pages側でSPAとして動く場合がありますが、直リンク対策として `/* /index.html 200` を置く構成が望ましいです。ない場合は、公開後に `/profile` や `/news/...` の直リンクを必ず確認してください。
-5. `public/404.html` がGitHub Pages固定の `/profile` リダイレクトだけになっていないか確認してください。
-   - Cloudflare Pagesでは `/work` や `/contact` の直リンクで `404.html` が返る場合があるため、`github.io` 以外のホストではルート基準に戻す実装になっている必要があります。
-
-Cloudflare Dashboardでの操作:
-1. `https://dash.cloudflare.com/` を開いてください。
-2. ログインが必要な場合はユーザーに操作してもらってください。
-3. 左メニューまたはトップから `Workers & Pages` を開いてください。
-4. `Create application` を選択してください。
-5. `Pages` を選択してください。
-6. `Import an existing Git repository` または `Connect to Git` を選択してください。
-7. GitHub連携を求められたら、ユーザーに許可操作をしてもらってください。
-   - 可能なら `Only select repositories` を選び、`deraryo4559/profile` のみにアクセスを付与してください。
-   - すでにGitHub連携済みなら次へ進んでください。
-8. リポジトリ一覧から `deraryo4559/profile` を選択してください。
-9. `Begin setup` または同等のボタンでビルド設定へ進んでください。
-
-Cloudflare Pagesの設定値:
-- Project name: `profile`
-- Production branch: `main`
-- Framework preset: `React (Vite)` があれば選択。なければ `None` でもよい。
-- Build command: `npm run build`
-- Build output directory: `dist`
-- Root directory: 空欄、または `/`
-- Environment variables:
-  - `NODE_VERSION` = `20`
-  - `VITE_BASE_PATH` = `/`
-
-初回デプロイ:
-1. 設定内容を見直し、`Save and Deploy` または同等のボタンを押してください。
-2. ビルドログを確認してください。
-3. `npm install` / `npm ci`、`npm run build`、assets upload が成功しているか確認してください。
-4. 失敗した場合は、エラー文を要約してユーザーに報告してください。Cloudflare上の設定だけで直せるもの以外は、勝手にGitHub上のコード編集をしないでください。
-5. 成功したら、Cloudflare Pagesが発行した `https://profile.pages.dev` などの公開URLを控えてください。
-
-公開後の確認:
-以下のURLをブラウザで開いて表示確認してください。実際の公開URLを `<PUBLIC_URL>` に置き換えてください。
-
-- `<PUBLIC_URL>/`
-- `<PUBLIC_URL>/profile`
-- `<PUBLIC_URL>/work`
-- `<PUBLIC_URL>/news`
-- `<PUBLIC_URL>/news/ai-business-insights-2026-completed`
-- `<PUBLIC_URL>/contact`
-
-確認観点:
-- トップページのロゴ、ヒーロー、WORK、NEWSが表示される
-- `/profile` の人物写真が大きく崩れていない
-- NEWS一覧のカテゴリタグが色分けされている
-- `/contact` のフォームUIが表示される
-- JS/CSS/assetsが404になっていない
-- 直リンクで開いてもCloudflareの404にならない
-- モバイル幅でもヘッダー、ヒーロー、プロフィール写真、NEWSタグが崩れない
-
-最終報告で含めること:
-- Cloudflare Pagesのプロジェクト名
-- 公開URL
-- デプロイ成功/失敗
-- 失敗した場合のエラー概要
-- 確認したURLと結果
-- ユーザー側で追加対応が必要な項目
-
-注意:
-- 認証情報、2FAコード、アクセストークンを記録しないでください。
-- GitHub連携の権限は必要最小限にしてください。
-- すでに同名のCloudflare Pagesプロジェクトがある場合は、既存プロジェクトを壊さず、ユーザーに確認してから進めてください。
-- 独自ドメイン設定は、ユーザーから明示的に依頼されるまでは行わないでください。
-```
-
-Cloudflare Pagesの `*.pages.dev` や独自ドメインのルートで公開する場合、`base: '/profile/'` のままだとビルド後のJS/CSS/assets参照が `/profile/assets/...` になり、ルート公開で壊れる可能性が高い。
-
-Cloudflare Pagesでルート公開するなら、以下のどちらかを選ぶ。
-
-## 方針A: Cloudflareへ完全移行する場合（推奨）
-
-`vite.config.ts` をCloudflare Pages向けにルート基準へ変更する。
-
-```ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  base: '/',
-})
-```
-
-さらにSPAルーティングのため、`public/_redirects` を追加する。
-
-```text
-/* /index.html 200
-```
-
-この設定にすると、以下のような直リンクでもCloudflare Pages上でReact Router相当のクライアントルーティングが動く。
-
-- `/profile`
-- `/work`
-- `/news/ai-business-insights-2026-completed`
-- `/contact`
-
-既存の `public/404.html` はGitHub Pages向けのフォールバックも兼ねるが、Cloudflare Pagesで返っても `/profile/` に固定リダイレクトしないよう、ホスト名に応じてルート基準へ切り替える。
-
-## 方針B: GitHub PagesとCloudflare Pagesを併用する場合
-
-環境変数でbase pathを切り替える。
+`vite.config.ts` は環境変数 `VITE_BASE_PATH` でbase pathを切り替える。
 
 ```ts
 import { defineConfig, loadEnv } from 'vite'
@@ -178,27 +55,24 @@ export default defineConfig(({ mode }) => {
 })
 ```
 
-Cloudflare Pages側の環境変数に以下を設定する。
+Cloudflare Pagesでは以下の環境変数を設定する。
 
 ```text
-VITE_BASE_PATH=/
+NODE_VERSION=20
+VITE_BASE_PATH=/profile/
 ```
 
-GitHub Pages用にビルドする場合は、環境変数を設定せずに `npm run build` を使う。
+SPA直リンク対策として `public/_redirects` を置く。
 
-現在の実装は、既存のGitHub Pages公開も残せる方針Bを採用している。
+```text
+/* /index.html 200
+```
+
+`public/404.html` は、`github.io` と `ryo-onodera.com` では `/profile` をbaseとして扱い、`pages.dev` では仮確認用にルート基準で扱う。
 
 ## Cloudflare Pages設定
 
-Cloudflare Dashboardで以下を設定する。
-
-1. Cloudflare Dashboardにログイン
-2. `Workers & Pages` を開く
-3. `Create application`
-4. `Pages`
-5. `Import an existing Git repository`
-6. GitHub連携を許可し、`deraryo4559/profile` を選択
-7. Build settingsを設定
+Cloudflare PagesのBuild settings:
 
 ```text
 Project name: profile
@@ -207,110 +81,257 @@ Framework preset: React (Vite) または None
 Build command: npm run build
 Build output directory: dist
 Root directory: 空欄
+Environment variable: NODE_VERSION=20
+Environment variable: VITE_BASE_PATH=/profile/
 ```
 
-必要に応じて環境変数を設定する。
+## Cloudflareカスタムドメイン設定
+
+Pages project `profile` に、公開用ではなくOrigin Rule用のカスタムドメインを追加する。
 
 ```text
-NODE_VERSION=20
+profile-origin.ryo-onodera.com
 ```
 
-このリポジトリではGitHub PagesとCloudflare Pagesを併用できるように、追加で以下を設定する。
+Cloudflare Dashboard:
+
+1. `Workers & Pages` を開く
+2. `profile` projectを選択
+3. `Custom domains`
+4. `Set up a domain`
+5. `profile-origin.ryo-onodera.com` を入力
+6. `Continue` -> `Activate domain`
+
+このドメインはユーザーに案内するURLではない。`ryo-onodera.com/profile` へルーティングするためのPages originとして使う。
+
+## Origin Rule
+
+`ryo-onodera.com` zoneでOrigin Ruleを作成する。
+
+条件:
 
 ```text
-VITE_BASE_PATH=/
+http.host eq "ryo-onodera.com"
+and (
+  http.request.uri.path eq "/profile"
+  or starts_with(http.request.uri.path, "/profile/")
+)
 ```
 
-## GitHubへpushする前の確認
-
-```powershell
-npm.cmd run lint
-npm.cmd run build
-git status
-git add .
-git commit -m "Prepare Cloudflare Pages deployment"
-git push origin main
-```
-
-このリポジトリは現在 `origin` が以下に向いている。
+設定:
 
 ```text
-https://github.com/deraryo4559/profile.git
+Host header: profile-origin.ryo-onodera.com
+DNS record override: profile-origin.ryo-onodera.com
 ```
 
-## 公開後の確認項目
+目的:
 
-Cloudflare Pagesの初回デプロイ後、以下を確認する。
+- `https://ryo-onodera.com/profile`
+- `https://ryo-onodera.com/profile/work`
+- `https://ryo-onodera.com/profile/assets/...`
 
-- `/` でトップページが表示される
-- `/profile` でプロフィールページが表示される
-- `/news` でNEWS一覧が表示される
-- `/news/ai-business-insights-2026-completed` などNEWS詳細直リンクが表示される
-- `/contact` のフォームUIが表示される
-- ロゴ、プロフィール画像、WORK画像、修了証PDFが404にならない
+これらのリクエストだけをPages projectへ送る。
+
+## URL Rewrite Rule
+
+同じ `ryo-onodera.com` zoneでURL Rewrite Ruleを作成し、Pages originへ送る前に `/profile` を取り除く。
+
+条件:
+
+```text
+http.host eq "ryo-onodera.com"
+and (
+  http.request.uri.path eq "/profile"
+  or starts_with(http.request.uri.path, "/profile/")
+)
+```
+
+動的パス書き換え:
+
+```text
+regex_replace(http.request.uri.path, "^/profile/?", "/")
+```
+
+期待される変換:
+
+```text
+/profile        -> /
+/profile/       -> /
+/profile/work   -> /work
+/profile/assets -> /assets
+```
+
+Dashboardで `regex_replace` が使いにくい場合は、以下の2つのURL Rewrite Ruleに分ける。
+
+```text
+1. https://ryo-onodera.com/profile
+   Path rewrite: /
+
+2. https://ryo-onodera.com/profile/*
+   Path rewrite: /${1}
+```
+
+## pages.devの扱い
+
+`https://profile-94u.pages.dev` は仮URLなので、最終的には案内しない。
+
+必要ならCloudflareのBulk Redirectで以下へ転送する。
+
+```text
+Source: https://profile-94u.pages.dev/*
+Target: https://ryo-onodera.com/profile/${1}
+Status: 301
+Preserve query string: on
+Subpath matching / Preserve path suffix: on
+```
+
+## 公開後の確認URL
+
+以下をブラウザ直リンクで確認する。
+
+```text
+https://ryo-onodera.com/profile
+https://ryo-onodera.com/profile/about
+https://ryo-onodera.com/profile/about/aces-internship
+https://ryo-onodera.com/profile/work
+https://ryo-onodera.com/profile/news
+https://ryo-onodera.com/profile/news/ai-business-insights-2026-completed
+https://ryo-onodera.com/profile/contact
+```
+
+確認観点:
+
+- `profile-94u.pages.dev` ではなく `ryo-onodera.com/profile` で表示される
+- `/profile/work` や `/profile/contact` の直リンクで白画面にならない
+- JS/CSS/assetsが `/profile/assets/...` として404にならない
+- ナビゲーションのリンクが `/profile/...` 配下になる
+- Profile詳細ページは `/profile/about`
+- 経歴ハイライト詳細は `/profile/about/...`
 - モバイル表示でヘッダー、プロフィール写真、NEWSタグが崩れない
+
+## Claude Chromeに依頼するプロンプト
+
+```text
+あなたはブラウザ操作でCloudflare Pagesの公開URLを修正する担当です。
+
+目的:
+現在の仮URL `https://profile-94u.pages.dev` ではなく、正式URL `https://ryo-onodera.com/profile` でプロフィールサイトを公開してください。
+
+重要:
+- 操作はブラウザ上で行ってください。
+- Cloudflare / GitHub のログイン、2FA、権限確認が出た場合はユーザーに操作を引き継いでください。
+- パスワード、認証コード、トークンを記録・推測しないでください。
+- `ryo-onodera.com` の既存サイトや他のパスを壊さないでください。
+- `ryo-onodera.com/profile` 配下だけをこのPages projectに向けてください。
+
+前提:
+- GitHub repo: https://github.com/deraryo4559/profile.git
+- Cloudflare Pages project: profile
+- Production branch: main
+- Build command: npm run build
+- Build output directory: dist
+- 正式URL: https://ryo-onodera.com/profile
+- 仮URL: https://profile-94u.pages.dev
+
+1. GitHubとPagesの最新状態確認
+- GitHubの main が最新コミットを指していることを確認してください。
+- Cloudflare Pages project `profile` の最新デプロイが成功していることを確認してください。
+- Build environment variablesを確認し、以下にしてください。
+  NODE_VERSION=20
+  VITE_BASE_PATH=/profile/
+- もし `VITE_BASE_PATH=/` になっていたら `/profile/` に変更し、再デプロイしてください。
+
+2. Pages origin用カスタムドメインの追加
+- Cloudflare Dashboardで `Workers & Pages` -> `profile` -> `Custom domains` を開いてください。
+- `Set up a domain` から以下を追加してください。
+  profile-origin.ryo-onodera.com
+- Activate domainまで完了してください。
+- この `profile-origin.ryo-onodera.com` はユーザーに案内するURLではなく、Origin Rule用の内部的な宛先として扱ってください。
+
+3. ryo-onodera.com zoneでOrigin Ruleを作成
+- `ryo-onodera.com` zoneを開いてください。
+- Rules -> Origin Rulesで新規ルールを作成してください。
+- 条件は以下にしてください。
+  http.host eq "ryo-onodera.com"
+  and (
+    http.request.uri.path eq "/profile"
+    or starts_with(http.request.uri.path, "/profile/")
+  )
+- Origin settingsは以下にしてください。
+  Host header: profile-origin.ryo-onodera.com
+  DNS record override: profile-origin.ryo-onodera.com
+
+4. URL Rewrite Ruleを作成
+- Rules -> Transform Rules -> URL Rewrite Ruleを作成してください。
+- 条件はOrigin Ruleと同じです。
+  http.host eq "ryo-onodera.com"
+  and (
+    http.request.uri.path eq "/profile"
+    or starts_with(http.request.uri.path, "/profile/")
+  )
+- 動的パス書き換えが使える場合、Pathを以下へ書き換えてください。
+  regex_replace(http.request.uri.path, "^/profile/?", "/")
+- Dashboard上で難しい場合は、2つのルールに分けてください。
+  1. https://ryo-onodera.com/profile -> /
+  2. https://ryo-onodera.com/profile/* -> /${1}
+
+5. pages.devの扱い
+- 可能ならBulk Redirectで `https://profile-94u.pages.dev/*` を `https://ryo-onodera.com/profile/${1}` に301リダイレクトしてください。
+- Bulk Redirectの設定が難しければ、最低限ユーザーに「正式URLは `https://ryo-onodera.com/profile`。pages.devは仮URLとして残る」と報告してください。
+
+6. 公開確認
+以下を直リンクで開いて確認してください。
+
+- https://ryo-onodera.com/profile
+- https://ryo-onodera.com/profile/about
+- https://ryo-onodera.com/profile/about/aces-internship
+- https://ryo-onodera.com/profile/work
+- https://ryo-onodera.com/profile/news
+- https://ryo-onodera.com/profile/news/ai-business-insights-2026-completed
+- https://ryo-onodera.com/profile/contact
+
+確認観点:
+- URLが `profile-94u.pages.dev` ではなく `ryo-onodera.com/profile` 配下になっている
+- ナビゲーション後も `/profile/...` 配下に留まる
+- JS/CSS/assetsが404にならない
+- 直リンクで開いても白画面にならない
+- Contactフォーム、NEWS、WORK、プロフィール写真が表示される
+
+最終報告:
+- 変更したCloudflare設定
+- 最新デプロイの状態
+- 正式公開URL
+- 確認したURLと結果
+- まだ残っている問題
+```
 
 ## Claude Codeに依頼するプロンプト
 
 ```text
-あなたはこのリポジトリのデプロイ担当です。
-
-対象リポジトリ:
-https://github.com/deraryo4559/profile.git
-
-ローカル作業ディレクトリ:
-C:\Users\ryoon\workspace\profile
+あなたはこのリポジトリのデプロイ設定担当です。
 
 目的:
-このVite + React + TypeScriptのプロフィールサイトをGitHubへpushし、Cloudflare Pagesで公開できる状態にしてください。
+Cloudflare Pagesで `https://ryo-onodera.com/profile` 配下に公開できるよう、リポジトリ側の設定を確認・修正してください。
 
-前提:
-- Cloudflare PagesでGitHubリポジトリ連携デプロイを使う。
-- 本番ブランチは main。
-- Cloudflare Pagesの標準設定は Build command: npm run build、Build output directory: dist。
-- Cloudflare PagesではルートURLで公開したい。
-- 現在 vite.config.ts は GitHub Pages向けに base: '/profile/' になっている可能性がある。
+対象:
+https://github.com/deraryo4559/profile.git
+C:\Users\ryoon\workspace\profile
 
-作業方針:
-1. まず現在の差分、ブランチ、remote、package.json、vite.config.ts、public配下を確認してください。
-2. Cloudflare Pagesのルート公開に合わせて vite.config.ts が `VITE_BASE_PATH` でbaseを切り替えられる状態か確認してください。
-   - 現在の想定は、環境変数未指定時はGitHub Pages向けに `/profile/`、Cloudflare Pages側では `VITE_BASE_PATH=/` を指定して `/` に切り替える構成です。
-   - すでにこの構成になっていれば、vite.config.tsを不要に変更しないでください。
-3. SPA直リンク対応のため、public/_redirects が存在することを確認してください。
-   内容は以下:
-   /* /index.html 200
-4. public/404.html がCloudflare Pagesでも直リンクを壊さない内容か確認してください。
-   - GitHub Pagesでは `/profile` をbaseにし、`github.io` 以外のCloudflare Pagesや独自ドメインでは `/` をbaseにする実装が望ましいです。
-   - 固定で `var base = '/profile'` だけになっている場合は、Cloudflare直リンクで `/profile/` に飛ばされるため修正してください。
-5. npm.cmd run lint と npm.cmd run build を実行し、通ることを確認してください。
-6. 失敗した場合は原因を調査して修正してください。不要なリファクタはしないでください。
-7. 問題なければ git status を確認し、変更内容を要約してください。
-8. 以下のようなコミットメッセージでコミットしてください。
-   Prepare Cloudflare Pages deployment
-9. origin が https://github.com/deraryo4559/profile.git であることを確認し、main にpushしてください。
-10. Cloudflare Dashboardでの設定手順を最後にユーザーへ案内してください。
+作業:
+1. vite.config.ts が `VITE_BASE_PATH` を読み、未指定時は `/profile/` になることを確認してください。
+2. Cloudflare Pages用の環境変数は `VITE_BASE_PATH=/profile/` を前提にしてください。
+3. public/_redirects に `/* /index.html 200` があることを確認してください。
+4. public/404.html が `ryo-onodera.com` と `github.io` では `/profile` をbaseとして扱うことを確認してください。
+5. アプリ内のProfile詳細ページは `/about` にし、公開時に `https://ryo-onodera.com/profile/about` になるようにしてください。
+6. npm.cmd run lint と npm.cmd run build を実行してください。
+7. `VITE_BASE_PATH=/profile/` を設定した状態でも npm.cmd run build を実行してください。
+8. 問題なければコミットして main にpushしてください。
 
-Cloudflare Pages設定:
-- Project name: profile
-- Production branch: main
-- Framework preset: React (Vite) または None
-- Build command: npm run build
-- Build output directory: dist
-- Root directory: 空欄
-- Environment variable: NODE_VERSION=20
-- Environment variable: VITE_BASE_PATH=/
-
-確認してほしいURL:
-- /
-- /profile
-- /work
-- /news
-- /news/ai-business-insights-2026-completed
-- /contact
-
-注意:
-- ユーザー未確認の大きなデザイン変更はしないでください。
-- 修了証PDF、画像、ContactフォームのGoogleフォーム連携を壊さないでください。
-- pushやCloudflare操作で認証が必要な場合は、勝手に回避せずユーザーに確認してください。
-- 最終報告では、変更ファイル、実行したコマンド、Cloudflare側でユーザーが行う操作、公開後の確認URLを簡潔にまとめてください。
+確認URL:
+- https://ryo-onodera.com/profile
+- https://ryo-onodera.com/profile/about
+- https://ryo-onodera.com/profile/work
+- https://ryo-onodera.com/profile/news
+- https://ryo-onodera.com/profile/contact
 ```
