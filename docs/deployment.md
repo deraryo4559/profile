@@ -59,6 +59,8 @@ GitHubリポジトリ `https://github.com/deraryo4559/profile.git` をCloudflare
    - `base: '/profile/'` の固定値のままなら、Cloudflareのルート公開ではJS/CSS/assetsが壊れる可能性があります。その場合はデプロイを進めず、ユーザーに「先にCloudflare Pages用にvite.config.tsを修正してpushする必要がある」と報告してください。
 4. 可能であれば `public/_redirects` があるか確認してください。
    - なくてもCloudflare Pages側でSPAとして動く場合がありますが、直リンク対策として `/* /index.html 200` を置く構成が望ましいです。ない場合は、公開後に `/profile` や `/news/...` の直リンクを必ず確認してください。
+5. `public/404.html` がGitHub Pages固定の `/profile` リダイレクトだけになっていないか確認してください。
+   - Cloudflare Pagesでは `/work` や `/contact` の直リンクで `404.html` が返る場合があるため、`github.io` 以外のホストではルート基準に戻す実装になっている必要があります。
 
 Cloudflare Dashboardでの操作:
 1. `https://dash.cloudflare.com/` を開いてください。
@@ -156,7 +158,7 @@ export default defineConfig({
 - `/news/ai-business-insights-2026-completed`
 - `/contact`
 
-既存の `public/404.html` はGitHub Pages向けのフォールバックなので、Cloudflare Pagesでは `_redirects` を優先する。
+既存の `public/404.html` はGitHub Pages向けのフォールバックも兼ねるが、Cloudflare Pagesで返っても `/profile/` に固定リダイレクトしないよう、ホスト名に応じてルート基準へ切り替える。
 
 ## 方針B: GitHub PagesとCloudflare Pagesを併用する場合
 
@@ -277,7 +279,9 @@ C:\Users\ryoon\workspace\profile
 3. SPA直リンク対応のため、public/_redirects が存在することを確認してください。
    内容は以下:
    /* /index.html 200
-4. 既存の public/404.html はGitHub Pages向けなので、Cloudflare Pagesでは _redirects を優先することを確認してください。削除は不要です。
+4. public/404.html がCloudflare Pagesでも直リンクを壊さない内容か確認してください。
+   - GitHub Pagesでは `/profile` をbaseにし、`github.io` 以外のCloudflare Pagesや独自ドメインでは `/` をbaseにする実装が望ましいです。
+   - 固定で `var base = '/profile'` だけになっている場合は、Cloudflare直リンクで `/profile/` に飛ばされるため修正してください。
 5. npm.cmd run lint と npm.cmd run build を実行し、通ることを確認してください。
 6. 失敗した場合は原因を調査して修正してください。不要なリファクタはしないでください。
 7. 問題なければ git status を確認し、変更内容を要約してください。

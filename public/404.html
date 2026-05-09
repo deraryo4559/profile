@@ -8,9 +8,12 @@
   <body>
     <script>
       ;(function () {
-        var base = '/profile'
+        var githubBase = '/profile'
+        var isGitHubPages = window.location.hostname.indexOf('github.io') !== -1
+        var base = isGitHubPages ? githubBase : ''
         var path = window.location.pathname
-        var route = path.indexOf(base) === 0 ? path.slice(base.length) || '/' : '/'
+        var hasBasePath = base && (path === base || path.indexOf(base + '/') === 0)
+        var route = hasBasePath ? path.slice(base.length) || '/' : path || '/'
         var query = route === '/' ? '' : '?route=' + encodeURIComponent(route)
 
         window.location.replace(base + '/' + query)
